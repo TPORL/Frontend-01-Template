@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Intrinsic Object Tree</title>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      #container {
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #search-form {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 9999;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <form id="search-form" autocomplete="off">
+      <input id="search-input" type="text" placeholder="Global Name" />
+    </form>
+
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.4.9/dist/g6.min.js"></script>
+    <script src="./intrinsic-object-tree.js"></script>
+    <script>
+      const container = document.querySelector('#container')
+      const span = document.createElement('span')
+      span.style.position = 'fixed'
+
+      const treeGraph = new G6.TreeGraph({
+        container: container,
+        width: container.scrollWidth,
+        height: container.scrollHeight,
+        modes: {
+          default: ['drag-canvas', 'zoom-canvas'],
+        },
+        defaultNode: {
+          type: 'rect',
+        },
+        defaultEdge: {
+          type: 'line',
+          labelCfg: {
+            refY: '10',
+            autoRotate: true,
+          },
+        },
+        layout: {
+          type: 'compactBox',
+          direction: 'LR',
+          getHGap: function getHGap() {
+            return 200
+          },
+        },
+      })
+
+      treeGraph.node((node) => {
+        span.textContent = node.id
+        return {
+          label: node.id,
+          size: [span.offsetWidth, span.offsetHeight],
+        }
+      })
+
+      treeGraph.edge(({ source, target }) => {
+        return {
+          label:
+            source.defaultCfg.id === 'globalThis'
+              ? ''
+              : target.defaultCfg.id
+                  .replace(source.defaultCfg.id, '')
+                  .replace(/^[\.\[]|\]$/g, ''),
+        }
+      })
+
+      document.body.appendChild(span)
+
+      treeGraph.data(intrinsicObjectTree)
+      treeGraph.render()
+      treeGraph.fitView()
+      treeGraph.focusItem('globalThis')
+
+      document.body.removeChild(span)
+
+      const searchForm = document.querySelector('#search-form')
+      const searchInput = document.querySelector('#search-input')
+
+      searchForm.addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const id = searchInput.value.trim()
+        if (!treeGraph.findById(id)) return
+        treeGraph.zoomTo(1)
+        treeGraph.focusItem(id)
+      })
+    </script>
+  </body>
+</html>
