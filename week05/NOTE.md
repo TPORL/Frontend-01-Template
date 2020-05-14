@@ -2,13 +2,28 @@
 
 ## JavaScript 部分
 
+### Source Code
+
+- Global code
+- Eval code
+- Function code
+- Module code
+
 ### Lexical Environment
 
-简单理解：包含一个 Environment Record 和一个 outer 属性。outer 属性连接外层的 Lexical Environment (形成 ES3 时代的作用域链)
+每种 Source Code 里都会生成 Lexical Environment，除此之外，BlockStatement 和 TryStatement 里面的 Catch 结构也会生成 Lexical Environment
+
+Lexical Environment 由 Environment Record 和 outer。outer 连接外层的 Lexical Environment (形成 ES3 时代的作用域链)
+
+global environment 就是 outer 为 null 的 Lexical Environment。通常 global environment 的 Environment Record 会记录 global object 和 一些全局变量
+
+module environment 就是 Module code 的 Lexical Environment。通常会包含一些`import`导入的变量
+
+function enviroment 就是 Function code 的 Lexical Environment。通常会包含`this`和`super`
 
 ### Environment Record
 
-简单理解：包含当前 Lexical Environment 里面的值(包括 this, new.target, super)
+简单理解：用来存储当前 Lexical Environment 里面的值(包括变量, this, new.target, super)
 
 ### Realm
 
@@ -28,14 +43,9 @@ realm = {
 
 ### Execution Context
 
-每份 Source Code 都会创建一个 Execution Context，而目前(ECMAScript 2019)只有四种类型的 Source Code
+每份 Source Code 都会创建一个 Execution Context
 
-- Global code
-- Eval code
-- Function code
-- Module code
-
-组件
+Execution Context 的组件
 
 - code evaluation state
 - Function
@@ -45,15 +55,112 @@ realm = {
 - VariableEnvironment
 - Generator (Generator 函数的 Execution Context 才有)
 
-因为包含 Realm，所以在哪都能访问到全局变量
-
 LexicalEnvironment 和 VariableEnvironment 只是 Execution Context 的组件，这两其实都是 Lexical Environment。而 VariableEnvironment 只有在 Execution Context 里有 VariableStatements(也就是 var 旧时代) 才会创建
 
 ### 示例分析
 
+> 个人理解，仅供参考
+
 ```js
-// TODO
+const a = 1
+
+function foo() {
+  const b = 2
+  console.log(a) // 1
+
+  {
+    const c = 3
+    console.log(a, b, c) // 1 2 3
+  }
+
+  {
+    const d = 4
+    console.log(c) // error
+  }
+}
 ```
+
+```js
+/**
+ * 代码执行前，创建好 Realm 和各种 Lexical Environment
+ */
+executionContextStack = []
+
+realm = {
+  // 包含一些全局对象
+}
+
+globalEnvironment = {
+  environmentRecord: {
+    // global object 等等
+  },
+  outer: null,
+}
+
+fooFunctionEnvironment = {
+  environmentRecord: {
+    foo,
+  },
+  outer: globalEnvironment,
+}
+
+fooBlock1Environment = {
+  environmentRecord: {},
+  outer: fooFunctionEnvironment,
+}
+
+fooBlock2Environment = {
+  environmentRecord: {},
+  outer: fooFunctionEnvironment,
+}
+
+/**
+ * 代码开始执行
+ */
+globalExecutionContext = {
+  // ...
+  LexicalEnvironment: globalEnvironment,
+}
+
+globalEnvironment.environmentRecord.a = 1
+
+executionContextStack.push(globalExecutionContext)
+
+/**
+ * 执行foo
+ */
+fooExecutionContext = {
+  // ...
+  LexicalEnvironment: fooFunctionEnvironment,
+}
+
+fooFunctionEnvironment.environmentRecord.b = 2
+fooFunctionEnvironment.outer = globalEnvironment
+
+executionContextStack.push(fooExecutionContext)
+
+/**
+ * 执行 foo 里面的 block1
+ */
+fooBlock1Environment.environmentRecord.c = 3
+fooBlock2Environment.outer = fooFunctionEnvironment
+
+/**
+ * 执行 foo 里面的 block2
+ */
+fooBlock2Environment.environmentRecord.d = 4
+fooBlock2Environment.outer = fooFunctionEnvironment
+
+// fooBlock1Environment -> fooFunctionEnvironment -> globalEnvironment
+// fooBlock2Environment -> fooFunctionEnvironment -> globalEnvironment
+// 因为 Lexical Environment 一个个连接起来，所以 block1 结构里面，能顺着这条链访问到变量 a, b, c
+// 但是 fooBlock2Environment 和 fooBlock1Environment 并没有连接关系，所以 fooBlock1Environment 不能访问到变量 c，因此会报错
+```
+
+TODO:
+
+- 更严谨(这上面忽略了很多东西)
+- 更复杂的案例
 
 ## 浏览器部分
 
