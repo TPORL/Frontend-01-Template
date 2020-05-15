@@ -18,6 +18,10 @@ function end() {
 }
 
 function match(pattern, string) {
+  if (typeof pattern !== 'string' || typeof string !== 'string') return false
+  if (pattern === string) return true
+  if (!pattern || !string) return false
+
   const states = [createState(pattern[0], 0)]
   const table = [0]
   let i = 1
