@@ -27,8 +27,8 @@ function match(pattern, string) {
   let i = 1
   let j = 0
 
-  while (i < string.length) {
-    if (string[i] === string[j]) {
+  while (i < pattern.length) {
+    if (pattern[i] === pattern[j]) {
       states.push(createState(pattern[i], i))
       table[i] = j + 1
       i++

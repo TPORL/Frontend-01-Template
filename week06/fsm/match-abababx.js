@@ -1,35 +1,41 @@
 /**
- * 小试牛刀
- *
- * abababx
+ * 小试牛刀 - 匹配 abababx
  */
 
 function match(string) {
-  let state = foundA
+  let state = start
   for (const char of string) {
     state = state(char)
   }
   return state === end
 }
 
-function foundA(char) {
+function start(char) {
   if (char === 'a') {
+    return foundA
+  } else {
+    return start
+  }
+}
+
+function foundA(char) {
+  if (char === 'b') {
     return foundB
   } else {
-    return foundA
+    return start(char)
   }
 }
 
 function foundB(char) {
-  if (char === 'b') {
+  if (char === 'a') {
     return foundA2
   } else {
-    return foundA(char)
+    return start(char)
   }
 }
 
 function foundA2(char) {
-  if (char === 'a') {
+  if (char === 'b') {
     return foundB2
   } else {
     return foundA(char)
@@ -37,34 +43,26 @@ function foundA2(char) {
 }
 
 function foundB2(char) {
-  if (char === 'b') {
+  if (char === 'a') {
     return foundA3
   } else {
-    return foundA(char)
+    return start(char)
   }
 }
 
 function foundA3(char) {
-  if (char === 'a') {
+  if (char === 'b') {
     return foundB3
   } else {
-    return foundA(char)
+    return start(char)
   }
 }
 
 function foundB3(char) {
-  if (char === 'b') {
-    return foundX
-  } else {
-    return foundA(char)
-  }
-}
-
-function foundX(char) {
   if (char === 'x') {
     return end
   } else {
-    return foundA3(char)
+    return foundB2(char)
   }
 }
 
