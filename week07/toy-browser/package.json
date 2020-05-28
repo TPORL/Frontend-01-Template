@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "serve": "node src/server.js",
+    "start": "node src/client.js"
+  },
+  "dependencies": {
+    "canvas": "^2.6.1",
+    "css": "^2.2.4",
+    "node-canvas-webgl": "^0.2.6",
+    "spritejs": "^3.7.17"
+  }
+}

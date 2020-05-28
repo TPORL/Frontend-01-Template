@@ -1,0 +1,9 @@
+{
+  "name": "css-standards",
+  "main": "index.js",
+  "author": "TPORL",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "superagent": "^5.2.2"
+  }
+}
