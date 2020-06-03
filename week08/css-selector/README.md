@@ -129,13 +129,6 @@
 
 - [x] `,`
 
-### Pseudo-elements
-
-- [x] `::first-line`
-- [x] `::first-letter`
-- [x] `::before`
-- [x] `::after`
-
 ## Demo
 
 `npm run serve` and `F12`
