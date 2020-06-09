@@ -41,7 +41,7 @@
   Logical
 
   - [ ] `:is()`
-  - [ ] `:not()`
+  - [x] `:not()`
   - [ ] `:where()`
   - [ ] `:has()`
 
@@ -80,14 +80,14 @@
 
   Input
 
-  - [ ] `:enable`
-  - [ ] `:disabled`
+  - [x] `:enable`
+  - [x] `:disabled`
   - [ ] `:read-only`
   - [ ] `:read-write`
   - [ ] `:placeholder-shown`
   - [ ] `:default`
-  - [ ] `:checked`
-  - [ ] `:indeterminate`
+  - [x] `:checked`
+  - [x] `:indeterminate`
   - [ ] `:blank`
   - [ ] `:valid`
   - [ ] `:invalid`
@@ -99,18 +99,18 @@
 
   Tree-Structural
 
-  - [ ] `:root`
-  - [ ] `:empty`
-  - [ ] `:nth-child()`
-  - [ ] `:nth-last-child()`
-  - [ ] `:first-child`
-  - [ ] `:last-child`
-  - [ ] `:only-child`
-  - [ ] `:nth-of-type()`
-  - [ ] `:nth-last-of-type()`
-  - [ ] `:first-of-type`
-  - [ ] `:last-of-type`
-  - [ ] `:only-of-type`
+  - [x] `:root`
+  - [x] `:empty`
+  - [x] `:nth-child()`
+  - [x] `:nth-last-child()`
+  - [x] `:first-child`
+  - [x] `:last-child`
+  - [x] `:only-child`
+  - [x] `:nth-of-type()`
+  - [x] `:nth-last-of-type()`
+  - [x] `:first-of-type`
+  - [x] `:last-of-type`
+  - [x] `:only-of-type`
 
   Grid-Structural
 
@@ -123,7 +123,7 @@
 - [x] `>`
 - [x] `+`
 - [x] `~`
-- [x] `||`
+- [ ] `||`
 
 ### Selector List
 
