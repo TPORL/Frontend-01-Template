@@ -34,6 +34,22 @@ function trimStart(string) {
   return string.replace(startWithWhitespace, '')
 }
 
+function parseExpression(expression) {
+  if (!expression) return
+
+  const result = expression.match(Scanner['anb'])
+  if (result) {
+    return {
+      a: result[1] || result[2],
+      n: result[3],
+      s: result[4],
+      b: result[5],
+    }
+  } else {
+    return parse(expression)
+  }
+}
+
 export default function parse(selector) {
   selector = trimStart(selector)
 
@@ -118,11 +134,36 @@ export default function parse(selector) {
       } else if (char === ':') {
         const nextChar = selector.charAt(1)
         if (nextChar === ':') {
-          // TODO
-          // pseudo-element
+          const result = selector.match(Scanner['ident'])
+          if (result == null) {
+            throw new Error('')
+          } else {
+            tokens.push({
+              type: 'pseudo-element',
+              name: result[0],
+            })
+            break
+          }
         } else {
-          // TODO
-          // pseudo-class
+          const result = selector.match(Scanner['pseudo'])
+          if (result == null) {
+            throw new Error('')
+          } else {
+            const token = {
+              type: 'pseudo-class',
+              name: result[1],
+            }
+
+            const data = parseExpression(result[2])
+            if (Array.isArray(data)) {
+              token.selectorList = data
+            } else {
+              token.expression = data
+            }
+
+            tokens.push(token)
+            selector = selector.substring(result[0].length + 1)
+          }
         }
       } else {
         const result = selector.match(Scanner['type'])
