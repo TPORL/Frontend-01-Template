@@ -2,27 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>CSS Selector</title>
   </head>
   <body>
     <main>
+      <span></span>
       <div></div>
+      <span></span>
+      <span></span>
+      <span></span>
       <div></div>
       <div id="target" class="abc" attr="efg"></div>
+      <div id="other" class="abc" attr="efg"></div>
+      <input type="checkbox" checked disabled />
+      <span></span>
     </main>
 
     <script type="module">
       import { match } from './src/index.js'
 
-      const element = document.querySelector('#target')
-      const selector =
-        'body > main div ~ div + div#target.abc[attr=efg], body main span'
+      const target = document.querySelector('#target')
+      const input = document.querySelector('input')
 
-      console.log(match(element, selector))
+      console.log(match(target, 'body > main div ~ div + div#target.abc[attr=efg], body main span'))
+      console.log(match(target, 'div:not(#other)'))
+      console.log(match(target, 'div:not(#other, #target)'))
+      console.log(match(target, 'div:not(#other):not(#target)'))
+      console.log(match(target, 'div:nth-child(2n+1)'))
+      console.log(match(input, 'input:checked:disabled'))
     </script>
   </body>
 </html>
