@@ -116,8 +116,8 @@ void (async () => {
       <tbody>
         ${standards
           .map(({ url, name, properties }) => {
-            properties = properties.join(', ')
-            return `<tr><td><a href="${url}">${name}</a></td><td>${properties}</td></tr>`
+            properties = properties.map((prop) => `<li>${prop}</li>`).join('')
+            return `<tr><td><a href="${url}">${name}</a></td><td><ul>${properties}</ul></td></tr>`
           })
           .join('\n        ')}
       </tbody>
