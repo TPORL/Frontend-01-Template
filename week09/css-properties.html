@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CSS Properties</title>
+  </head>
+  <body>
+    <script>
+      const props1 = Object.keys(document.body.style).filter((prop) => !/^webkit/.test(prop))
+      const props2 = Object.keys(getComputedStyle(document.body)).filter((prop) => !/^\d|webkit/.test(prop))
+      console.log(props1)
+      console.log(props2)
+    </script>
+  </body>
+</html>
