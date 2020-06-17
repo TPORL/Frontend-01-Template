@@ -133,18 +133,12 @@
           let start = y * 15
           let end = y * 15 + 14
           for (let i = step - 1; i >= start; i--) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           for (let i = step + 1; i <= end; i++) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           if (count >= 4) return true
         }
@@ -155,18 +149,12 @@
           let start = x
           let end = y * 15 + x
           for (let i = step - 15; i >= start; i -= 15) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           for (let i = step + 15; i <= end; i += 15) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           if (count >= 4) return true
         }
@@ -177,18 +165,12 @@
           let start = step - Math.min(14 - x, y) * 14
           let end = step + Math.min(x, 14 - y) * 14
           for (let i = step - 14; i >= start; i -= 14) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           for (let i = step + 14; i <= end; i += 14) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           if (count >= 4) return true
         }
@@ -199,18 +181,12 @@
           let start = step - Math.min(x, y) * 16
           let end = step + Math.max(14 - x, 14 - y) * 16
           for (let i = step - 16; i >= start; i -= 16) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           for (let i = step + 16; i <= end; i += 16) {
-            if (pattern[i] === player) {
-              count += 1
-            } else {
-              break
-            }
+            if (pattern[i] !== player) break
+            count += 1
           }
           if (count >= 4) return true
         }
