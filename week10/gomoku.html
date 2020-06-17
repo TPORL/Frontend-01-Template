@@ -27,6 +27,8 @@
         position: relative;
         width: var(--board-size);
         height: var(--board-size);
+        padding: 15px;
+        box-sizing: border-box;
         background-color: var(--board-color);
         display: grid;
         grid-template-rows: repeat(15, 1fr);
@@ -40,7 +42,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        border: calc(var(--board-size) / 15 / 2 - 1px) solid var(--board-color);
+        border: calc(var(--board-size) / 15 / 2 + 13px) solid var(--board-color);
         display: block;
         user-select: none;
         pointer-events: none;
