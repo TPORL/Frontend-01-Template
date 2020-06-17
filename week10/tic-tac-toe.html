@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Tic Tac Toe</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .board {
+        width: 300px;
+        height: 300px;
+        display: grid;
+        grid-template-rows: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      [class|='cell'] {
+        font-size: 60px;
+        background-color: #66f;
+        color: #fff;
+        cursor: pointer;
+        user-select: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .cell-1::before,
+      .cell-1::after {
+        content: '';
+        width: 1em;
+        height: 0.1em;
+        margin: 1px 0;
+        background-color: currentColor;
+        display: block;
+      }
+
+      .cell-1::before {
+        transform: rotate(45deg);
+      }
+
+      .cell-1::after {
+        margin-left: -1em;
+        transform: rotate(-45deg);
+      }
+
+      .cell-2::before {
+        content: '';
+        width: 1em;
+        height: 1em;
+        border: 0.1em solid currentColor;
+        border-radius: 50%;
+        box-sizing: border-box;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="board"></div>
+
+    <script>
+      // prettier-ignore
+      const pattern = [
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0,
+      ]
+
+      let currPlayer = 1
+      let is2P = false
+
+      const board = document.querySelector('.board')
+
+      function render() {
+        const frag = document.createDocumentFragment()
+        pattern.forEach((val, index) => {
+          const cell = document.createElement('div')
+          cell.classList.add('cell-' + val)
+          cell.addEventListener('click', () => move(index))
+          frag.appendChild(cell)
+        })
+        board.innerHTML = ''
+        board.appendChild(frag)
+      }
+
+      function restart() {
+        pattern.fill(0)
+        currPlayer = 1
+        render()
+      }
+
+      function calcWinner(pattern) {
+        const lines = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8],
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8],
+          [0, 4, 8],
+          [2, 4, 6],
+        ]
+
+        for (let i = 0; i < lines.length; i++) {
+          const [a, b, c] = lines[i]
+          if (pattern[a] !== 0 && pattern[a] === pattern[b] && pattern[a] === pattern[c]) {
+            return pattern[a]
+          }
+        }
+        return null
+      }
+
+      function willWin(pattern, player) {
+        for (let i = 0; i < 9; i++) {
+          if (pattern[i] !== 0) continue
+          const temp = [...pattern]
+          temp[i] = player
+          if (calcWinner(temp)) return i
+        }
+        return null
+      }
+
+      function calcNext(pattern, player) {
+        let step = willWin(pattern, player)
+        if (step != null) return { step, result: 1 }
+
+        let result = -1
+        for (let i = 0; i < 9; i++) {
+          if (pattern[i] !== 0) continue
+          const temp = [...pattern]
+          temp[i] = player
+          const opponentNext = calcNext(temp, 3 - player)
+          if (-opponentNext.result >= result) {
+            step = i
+            result = -opponentNext.result
+          }
+          if (result === 1) break
+        }
+
+        return {
+          step,
+          result: step === null ? 0 : result,
+        }
+      }
+
+      function canNext(pattern) {
+        return pattern.some((val) => val === 0)
+      }
+
+      function move(step) {
+        if (pattern[step] !== 0) return
+
+        pattern[step] = currPlayer
+        currPlayer = 3 - currPlayer
+        render()
+
+        const winner = calcWinner(pattern)
+        if (winner) {
+          setTimeout(() => {
+            alert('Winner: Player ' + winner)
+            restart()
+          }, 0)
+          return
+        }
+
+        if (!canNext(pattern)) {
+          setTimeout(() => {
+            alert('Draw')
+            restart()
+          }, 0)
+          return
+        }
+
+        // 电脑对打
+        // 1. 注释 if 语句
+        // 2. 手动调用 computerMove 函数
+        if (!is2P && currPlayer === 2) {
+          computerMove()
+        }
+      }
+
+      function computerMove() {
+        const { step } = calcNext(pattern, currPlayer)
+        move(step)
+      }
+
+      render()
+    </script>
+  </body>
+</html>

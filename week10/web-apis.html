@@ -1,0 +1,97 @@
+<script>
+  let names = Object.getOwnPropertyNames(window)
+
+  // Webkit
+  names = names.filter((name) => !/^webkit/i.test(name))
+
+  // Compatibility https://compat.spec.whatwg.org/
+  // window.orientation
+
+  // Console https://console.spec.whatwg.org/
+  names = names.filter((name) => name !== 'console')
+
+  // DOM https://dom.spec.whatwg.org/
+  const domAPIs = ['Event', 'CustomEvent', 'EventTarget', 'AbortController', 'AbortSignal', 'NodeList', 'HTMLCollection', 'MutationObserver', 'MutationRecord', 'Node', 'Document', 'DOMImplementation', 'DocumentType', 'DocumentFragment', 'ShadowRoot', 'Element', 'NamedNodeMap', 'Attr', 'CharacterData', 'Text', 'CDATASection', 'ProcessingInstruction', 'Comment', 'AbstractRange', 'StaticRange', 'Range', 'NodeIterator', 'TreeWalker', 'NodeFilter', 'DOMTokenList', 'XPathResult', 'XPathExpression', 'XPathEvaluator'] // prettier-ignore
+  names = names.filter((name) => domAPIs.indexOf(name) === -1)
+
+  // DOM - Nodes
+  names = names.filter((name) => window[name] == null || !(window[name].prototype instanceof Node))
+
+  // Encoding https://encoding.spec.whatwg.org/
+  const encodingAPIs = ['TextDecoderCommon', 'TextDecoder', 'TextEncoderCommon', 'TextEncoder', 'GenericTransformStream', 'TextDecoderStream', 'TextEncoderStream'] // prettier-ignore
+  names = names.filter((name) => encodingAPIs.indexOf(name) === -1)
+
+  // Fetch https://fetch.spec.whatwg.org/
+  const fetchAPIs = ['fetch', 'Headers', 'Request', 'Response']
+  names = names.filter((name) => fetchAPIs.indexOf(name) === -1)
+
+  // Fullscreen API https://fullscreen.spec.whatwg.org/
+  // null
+
+  // HTML https://html.spec.whatwg.org/
+  names = names.filter((name) => ['Window', 'HTMLAllCollection', 'HTMLFormControlsCollection', 'HTMLOptionsCollection', 'DOMStringList', 'TrackEvent', 'SubmitEvent', 'FormDataEvent', 'ImageBitmapRenderingContext', 'OffscreenCanvas', 'CustomElementRegistry', 'ElementInternals', 'DataTransfer', 'DataTransferItemList', 'DataTransferItem', 'DragEvent', 'History', 'Location', 'PopStateEvent', 'HashChangeEvent', 'PageTransitionEvent', 'BeforeUnloadEvent', 'ErrorEvent', 'PromiseRejectionEvent', 'MessageEvent', 'EventSource', 'WebSocket', 'CloseEvent', 'WorkerGlobalScope', 'DedicatedWorkerGlobalScope', 'SharedWorkerGlobalScope', 'Worker', 'SharedWorker'].indexOf(name) === -1) // prettier-ignore
+  // web storage
+  names = names.filter((name) => ['Storage', 'sessionStorage', 'localStorage', 'StorageEvent'].indexOf(name) === -1)
+
+  // HTML - Event Handlers
+  names = names.filter((name) => !/^on/.test(name))
+
+  // Infra https://infra.spec.whatwg.org/
+  // null
+
+  // MIME Sniffing https://mimesniff.spec.whatwg.org/
+  // null
+
+  // Notifications API https://notifications.spec.whatwg.org/
+  const notificationsAPIs = ['Notification']
+  names = names.filter((name) => notificationsAPIs.indexOf(name) === -1)
+
+  // Quirks Mode https://quirks.spec.whatwg.org/
+  // null
+
+  // Storage https://storage.spec.whatwg.org/
+  names = names.filter((name) => ['StorageManager'].indexOf(name) === -1)
+
+  // Streams https://streams.spec.whatwg.org/
+  names = names.filter((name) => ['ReadableStream', 'ReadableStreamDefaultReader', 'ReadableStreamBYOBReader', 'ReadableStreamDefaultController', 'ReadableByteStreamController', 'ReadableStreamBYOBRequest', 'WritableStream', 'WritableStreamDefaultWriter', 'WritableStreamDefaultController', 'TransformStream', 'TransformStreamDefaultController', 'ByteLengthQueuingStrategy', 'CountQueuingStrategy'].indexOf(name) === -1) // prettier-ignore
+
+  // URL https://url.spec.whatwg.org/
+  names = names.filter((name) => ['URL', 'URLSearchParams'].indexOf(name) === -1)
+
+  // XMLHttpRequest https://xhr.spec.whatwg.org/
+  names = names.filter((name) => ['XMLHttpRequest', 'FormData', 'ProgressEvent'].indexOf(name) === -1)
+
+  // ECMAScript http://ecma-international.org/ecma-262/
+  const jsAPIs = ['Object', 'Function', 'Array', 'Number', 'parseFloat', 'parseInt', 'Infinity', 'NaN', 'undefined', 'Boolean', 'String', 'Symbol', 'Date', 'Promise', 'RegExp', 'Error', 'EvalError', 'RangeError', 'ReferenceError', 'SyntaxError', 'TypeError', 'URIError', 'globalThis', 'JSON', 'Math', 'ArrayBuffer', 'Uint8Array', 'Int8Array', 'Uint16Array', 'Int16Array', 'Uint32Array', 'Int32Array', 'Float32Array', 'Float64Array', 'Uint8ClampedArray', 'BigUint64Array', 'BigInt64Array', 'DataView', 'Map', 'BigInt', 'Set', 'WeakMap', 'WeakSet', 'Proxy', 'Reflect', 'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'escape', 'unescape', 'eval', 'isFinite', 'isNaN'] // prettier-ignore
+  names = names.filter((name) => jsAPIs.indexOf(name) === -1)
+
+  // Intl http://ecma-international.org/ecma-402/
+  names = names.filter((name) => name !== 'Intl')
+
+  // WebGL API https://www.khronos.org/registry/OpenGL-Refpages/
+  names = names.filter((name) => !/^webgl/i.test(name))
+
+  // Web Audio API https://webaudio.github.io/web-audio-api/
+  const audioAPIs = ['AudioContext', 'AudioNode', 'AnalyserNode', 'AudioBuffer', 'AudioBufferSourceNode', 'AudioDestinationNode', 'AudioParam', 'AudioListener', 'AudioWorklet', 'AudioWorkletGlobalScope', 'AudioWorkletNode', 'AudioWorkletProcessor', 'BiquadFilterNode', 'ChannelMergerNode', 'ChannelSplitterNode', 'ConstantSourceNode', 'ConvolverNode', 'DelayNode', 'DynamicsCompressorNode', 'GainNode', 'IIRFilterNode', 'MediaElementAudioSourceNode', 'MediaStreamAudioSourceNode', 'MediaStreamTrackAudioSourceNode', 'MediaStreamAudioDestinationNode', 'PannerNode', 'PeriodicWave', 'OscillatorNode', 'StereoPannerNode', 'WaveShaperNode', 'ScriptProcessorNode', 'AudioProcessingEvent'] // prettier-ignore
+  names = names.filter((name) => audioAPIs.indexOf(name) === -1)
+
+  // SyncManager https://wicg.github.io/BackgroundSync/spec/#sync-manager-interface
+  names = names.filter((name) => name !== 'SyncManager')
+
+  // Web RTC
+  names = names.filter((name) => !/^RTC/.test(name))
+
+  // Index DB https://www.w3.org/TR/IndexedDB/
+  names = names.filter((name) => !/^IDB/.test(name))
+
+  // SVG API https://svgwg.org/
+  names = names.filter((name) => !/^SVG/.test(name))
+
+  // Performance API
+  names = names.filter((name) => !/^Performance/.test(name))
+
+  // TODO
+  // Other API
+
+  console.log(names)
+</script>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Gomoku</title>
+    <style>
+      :root {
+        --board-size: 100vmin;
+        --board-color: burlywood;
+        --board-line-color: black;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .board {
+        position: relative;
+        width: var(--board-size);
+        height: var(--board-size);
+        background-color: var(--board-color);
+        display: grid;
+        grid-template-rows: repeat(15, 1fr);
+        grid-template-columns: repeat(15, 1fr);
+      }
+
+      .board::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border: calc(var(--board-size) / 15 / 2 - 1px) solid var(--board-color);
+        display: block;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      [class|='point'] {
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      [class|='point']::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: linear-gradient(
+            to right,
+            transparent calc(50% - 1px),
+            var(--board-line-color) calc(50% - 1px),
+            var(--board-line-color) calc(50% + 1px),
+            transparent calc(50% + 1px)
+          ),
+          linear-gradient(
+            to bottom,
+            transparent calc(50% - 1px),
+            var(--board-line-color) calc(50% - 1px),
+            var(--board-line-color) calc(50% + 1px),
+            transparent calc(50% + 1px)
+          );
+      }
+
+      .point-1::after,
+      .point-2::after {
+        content: '';
+        position: relative;
+        width: 90%;
+        height: 90%;
+        border-radius: 50%;
+        display: block;
+      }
+
+      .point-1::after {
+        background-color: black;
+      }
+
+      .point-2::after {
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="board"></div>
+
+    <script>
+      const pattern = Array(225).fill(0)
+      let currPlayer = 1
+      const board = document.querySelector('.board')
+
+      function render() {
+        const frag = document.createDocumentFragment()
+        pattern.forEach((val, index) => {
+          const point = document.createElement('div')
+          point.classList.add('point-' + val)
+          point.addEventListener('click', () => move(index))
+          frag.appendChild(point)
+        })
+        board.innerHTML = ''
+        board.appendChild(frag)
+      }
+
+      function restart() {
+        pattern.fill(0)
+        currPlayer = 1
+        render()
+      }
+
+      function isWin(pattern, player, step) {
+        const x = step % 15
+        const y = (step / 15) >> 0
+
+        // 横
+        {
+          let count = 0
+          let start = y * 15
+          let end = y * 15 + 14
+          for (let i = step - 1; i >= start; i--) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          for (let i = step + 1; i <= end; i++) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          if (count >= 4) return true
+        }
+
+        // 竖
+        {
+          let count = 0
+          let start = x
+          let end = y * 15 + x
+          for (let i = step - 15; i >= start; i -= 15) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          for (let i = step + 15; i <= end; i += 15) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          if (count >= 4) return true
+        }
+
+        // 左斜
+        {
+          let count = 0
+          let start = step - Math.min(14 - x, y) * 14
+          let end = step + Math.min(x, 14 - y) * 14
+          for (let i = step - 14; i >= start; i -= 14) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          for (let i = step + 14; i <= end; i += 14) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          if (count >= 4) return true
+        }
+
+        // 右斜
+        {
+          let count = 0
+          let start = step - Math.min(x, y) * 16
+          let end = step + Math.max(14 - x, 14 - y) * 16
+          for (let i = step - 16; i >= start; i -= 16) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          for (let i = step + 16; i <= end; i += 16) {
+            if (pattern[i] === player) {
+              count += 1
+            } else {
+              break
+            }
+          }
+          if (count >= 4) return true
+        }
+
+        return false
+      }
+
+      function isDraw(pattern) {
+        return pattern.every((val) => val !== 0)
+      }
+
+      function move(step) {
+        if (pattern[step] !== 0) return
+
+        pattern[step] = currPlayer
+        render()
+
+        if (isWin(pattern, currPlayer, step)) {
+          setTimeout(() => {
+            alert('Winner: Player ' + currPlayer)
+            restart()
+          }, 0)
+          return
+        }
+
+        if (isDraw(pattern)) {
+          setTimeout(() => {
+            alert('Draw')
+            restart()
+          }, 0)
+          return
+        }
+
+        currPlayer = 3 - currPlayer
+      }
+
+      render()
+    </script>
+  </body>
+</html>
