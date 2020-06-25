@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>RegExp</title>
+    <style>
+      .keywords {
+        color: blue;
+      }
+
+      .identifier {
+        color: green;
+      }
+
+      .punctuator {
+        color: purple;
+      }
+    </style>
+  </head>
+  <body>
+    <pre id="container"></pre>
+    <script>
+      const source = `
+        function sleep(ms) {
+          return new Promise((resolve) => {
+            setTimeout(resolve, ms)
+          })
+        }
+      `
+
+      const regexp = /(function|new|return)|([ \t\n\r]+)|([a-zA-Z][a-zA-Z0-9]*)|([\(\)\{\}\,\;])/g
+      const dictionary = ['keywords', 'whitespace', 'identifier', 'punctuator']
+      const container = document.querySelector('#container')
+      let token = null
+
+      do {
+        token = regexp.exec(source)
+        if (!token) break
+        const text = document.createElement('span')
+        text.textContent = token[0]
+        for (let i = 1; i < 5; i++) {
+          if (!token[i]) continue
+          text.classList.add(dictionary[i - 1])
+        }
+        container.appendChild(text)
+      } while (token)
+    </script>
+  </body>
+</html>

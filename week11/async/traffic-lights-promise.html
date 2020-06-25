@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Traffic Lights</title>
+    <style>
+      .lights {
+        width: 200px;
+        padding: 10px;
+        margin: 0 auto;
+        background-color: black;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      [class|='light'] {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        opacity: 0.2;
+      }
+
+      [class|='light'].active {
+        opacity: 1;
+      }
+
+      .light-red {
+        background-color: red;
+      }
+
+      .light-orange {
+        background-color: orange;
+      }
+
+      .light-green {
+        background-color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lights">
+      <div class="light-red"></div>
+      <div class="light-orange"></div>
+      <div class="light-green"></div>
+    </div>
+
+    <script>
+      const redLight = document.querySelector('.light-red')
+      const greenLight = document.querySelector('.light-green')
+      const orangeLight = document.querySelector('.light-orange')
+
+      function changeToRed() {
+        redLight.classList.add('active')
+        greenLight.classList.remove('active')
+        orangeLight.classList.remove('active')
+      }
+
+      function changeToGreen() {
+        redLight.classList.remove('active')
+        greenLight.classList.add('active')
+        orangeLight.classList.remove('active')
+      }
+
+      function changeToOrange() {
+        redLight.classList.remove('active')
+        greenLight.classList.remove('active')
+        orangeLight.classList.add('active')
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms))
+      }
+
+      function run() {
+        changeToRed()
+        sleep(500)
+          .then(() => {
+            changeToGreen()
+            return sleep(1000)
+          })
+          .then(() => {
+            changeToOrange()
+            return sleep(200)
+          })
+          .then(run)
+      }
+
+      run()
+    </script>
+  </body>
+</html>

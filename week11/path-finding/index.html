@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Path-finding</title>
+    <style>
+      #container {
+        width: 699px;
+        vertical-align: top;
+        display: inline-grid;
+        grid-template-rows: repeat(100, 6px);
+        grid-template-columns: repeat(100, 6px);
+        gap: 1px;
+      }
+
+      .cell {
+        user-select: none;
+        background-color: #ddd;
+      }
+
+      .wall {
+        background-color: #333;
+      }
+
+      .area {
+        background-color: #4b8;
+      }
+
+      .target {
+        background-color: #f66;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <div>
+      <button onclick="save()">Save</button>
+      <button onclick="clean()">Clean</button>
+      <button onclick="reset()">Reset</button>
+      <button onclick="run()">Run</button>
+    </div>
+
+    <script src="./defaultMap.js"></script>
+    <script>
+      let map = JSON.parse(localStorage.getItem('map')) || [...defaultMap]
+      let isRuning = false
+      let isMouseDown = false
+      let isEraserMode = false
+
+      const container = document.querySelector('#container')
+      const frag = document.createDocumentFragment()
+      map.forEach((val, i) => {
+        const cell = document.createElement('cell')
+        cell.classList.add('cell')
+        val === 1 && cell.classList.add('wall')
+        cell.addEventListener('mouseover', () => {
+          if (!isMouseDown || isRuning) return
+          if (isEraserMode) {
+            map[i] = 0
+            cell.classList.remove('wall')
+          } else {
+            map[i] = 1
+            cell.classList.add('wall')
+          }
+        })
+        frag.appendChild(cell)
+      })
+      container.appendChild(frag)
+
+      container.addEventListener('contextmenu', (evt) => {
+        evt.preventDefault()
+      })
+
+      container.addEventListener('mousedown', (evt) => {
+        isMouseDown = true
+        isEraserMode = evt.which === 3
+      })
+
+      document.addEventListener('mouseup', () => {
+        isMouseDown = false
+      })
+
+      const cells = document.querySelectorAll('.cell')
+
+      function save() {
+        if (isRuning) return
+        localStorage.setItem('map', JSON.stringify(map))
+      }
+
+      function clean() {
+        if (isRuning) return
+        map.forEach((val, i) => {
+          map[i] = 0
+          cells[i].classList.remove('wall')
+        })
+      }
+
+      function reset() {
+        if (isRuning) return
+        map = [...defaultMap]
+        map.forEach((val, i) => {
+          map[i] = val
+          if (val) {
+            cells[i].classList.add('wall')
+          } else {
+            cells[i].classList.remove('wall')
+          }
+        })
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms))
+      }
+
+      function findPath(map, start, end) {}
+
+      function run() {
+        if (isRuning) return
+        isRuning = true
+
+        const start = { x: 0, y: 0 }
+        const end = { x: 70, y: 70 }
+
+        cells[end.x + end.y * 100].classList.add('target')
+
+        findPath(map, start, end)
+      }
+    </script>
+  </body>
+</html>
