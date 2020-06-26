@@ -52,7 +52,7 @@
     <script>
       class Sorted {
         constructor(data, compare = (a, b) => a - b) {
-          this.data = data.slice()
+          this.data = [...data]
           this.compare = compare
         }
 
@@ -80,6 +80,69 @@
             data[minIndex] = data[length - 1]
           }
           data.pop()
+
+          return min
+        }
+
+        get length() {
+          return this.data.length
+        }
+      }
+
+      class BinaryHeap {
+        constructor(data, compare = (a, b) => a - b) {
+          this.data = [...data]
+          this.compare = compare
+        }
+
+        insertAt(index, value) {
+          const { data, compare } = this
+          data[index] = value
+
+          let middle = ((index - 1) / 2) >> 0
+          while (index > 0 && compare(value, data[middle]) < 0) {
+            data[index] = data[middle]
+            data[middle] = value
+            index = middle
+            middle = ((index - 1) / 2) >> 0
+          }
+        }
+
+        insert(value) {
+          this.insertAt(this.length, value)
+        }
+
+        take() {
+          if (!this.length) return null
+
+          const { data, compare } = this
+          const { length } = data
+          let min = data[0]
+          let i = 0
+
+          while (i < length) {
+            if (i * 2 + 1 >= data.length) {
+              break
+            } else if (i * 2 + 2 >= length) {
+              data[i] = data[i * 2 + 1]
+              i = i * 2 + 1
+              break
+            }
+
+            if (compare(data[i * 2 + 1], data[i * 2 + 2]) < 0) {
+              data[i] = data[i * 2 + 1]
+              i = i * 2 + 1
+            } else {
+              data[i] = data[i * 2 + 2]
+              i = i * 2 + 2
+            }
+          }
+
+          if (i < length - 1) {
+            this.insertAt(i, data.pop())
+          } else {
+            data.pop()
+          }
 
           return min
         }
@@ -164,30 +227,30 @@
       }
 
       async function findPath(map, start, end) {
-        const queue = new Sorted([start], (a, b) => distance(a, end) - distance(b, end))
-        const table = [...map]
+        map = [...map]
+        const heap = new BinaryHeap([start], (a, b) => distance(a, end) - distance(b, end))
 
         async function addPoint(x, y, prev) {
           const index = x + y * 100
 
           if (x < 0 || x > 99 || y < 0 || y > 99) return false
-          if (table[index] !== 0) return false
+          if (map[index] !== 0) return false
 
           await sleep(0)
           cells[index].classList.add('area')
-          table[index] = prev
-          queue.give([x, y])
+          map[index] = prev
+          heap.insert([x, y])
           return true
         }
 
-        while (queue.length) {
-          let [x, y] = queue.take()
+        while (heap.length) {
+          let [x, y] = heap.take()
 
           if (x === end[0] && y === end[1]) {
             const path = []
             while (x !== start[0] || y !== start[1]) {
               path.unshift([x, y])
-              ;[x, y] = table[x + y * 100]
+              ;[x, y] = map[x + y * 100]
               await sleep(0)
               cells[x + y * 100].classList.add('path')
             }
