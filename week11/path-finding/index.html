@@ -27,7 +27,15 @@
         background-color: #4b8;
       }
 
-      .target {
+      .path {
+        background-color: #66f;
+      }
+
+      .start {
+        background-color: #ff6;
+      }
+
+      .end {
         background-color: #f66;
       }
     </style>
@@ -92,7 +100,7 @@
         if (isRuning) return
         map.forEach((val, i) => {
           map[i] = 0
-          cells[i].classList.remove('wall')
+          cells[i].className = 'cell'
         })
       }
 
@@ -101,6 +109,7 @@
         map = [...defaultMap]
         map.forEach((val, i) => {
           map[i] = val
+          cells[i].className = 'cell'
           if (val) {
             cells[i].classList.add('wall')
           } else {
@@ -109,22 +118,84 @@
         })
       }
 
-      function sleep(ms) {
+      function restart() {
+        if (!isRuning) return
+        map.forEach((val, i) => {
+          map[i] = val
+          cells[i].className = 'cell'
+          if (val) {
+            cells[i].classList.add('wall')
+          } else {
+            cells[i].classList.remove('wall')
+          }
+        })
+      }
+
+      function sleep(ms = 0) {
         return new Promise((resolve) => setTimeout(resolve, ms))
       }
 
-      function findPath(map, start, end) {}
+      async function findPath(map, start, end) {
+        const queue = [start]
+        const table = [...map]
 
-      function run() {
+        async function addPoint(x, y, prev) {
+          const index = x + y * 100
+
+          if (x < 0 || x > 99 || y < 0 || y > 99) return false
+          if (table[index] !== 0) return false
+
+          // await sleep(0)
+          cells[index].classList.add('area')
+          table[index] = prev
+          queue.push([x, y])
+          return true
+        }
+
+        while (queue.length) {
+          let [x, y] = queue.shift()
+
+          if (x === end[0] && y === end[1]) {
+            const path = []
+            while (x !== start[0] || y !== start[1]) {
+              path.unshift([x, y])
+              await sleep(0)
+              cells[x + y * 100].classList.add('path')
+              ;[x, y] = table[x + y * 100]
+            }
+            path.unshift([x, y])
+            return path
+          }
+
+          const up = await addPoint(x, y - 1, [x, y])
+          const down = await addPoint(x, y + 1, [x, y])
+          const left = await addPoint(x - 1, y, [x, y])
+          const right = await addPoint(x + 1, y, [x, y])
+
+          ;(up || left) && (await addPoint(x - 1, y - 1, [x, y]))
+          ;(up || right) && (await addPoint(x + 1, y - 1, [x, y]))
+          ;(down || right) && (await addPoint(x + 1, y + 1, [x, y]))
+          ;(down || left) && (await addPoint(x - 1, y + 1, [x, y]))
+        }
+
+        return null
+      }
+
+      async function run() {
         if (isRuning) return
         isRuning = true
 
-        const start = { x: 0, y: 0 }
-        const end = { x: 70, y: 70 }
+        restart()
 
-        cells[end.x + end.y * 100].classList.add('target')
+        const start = [0, 0]
+        const end = [50, 50]
+        cells[start[0] + start[1] * 100].classList.add('start')
+        cells[end[0] + end[1] * 100].classList.add('end')
 
-        findPath(map, start, end)
+        const path = await findPath(map, start, end)
+        console.log(path)
+
+        isRuning = false
       }
     </script>
   </body>
