@@ -45,12 +45,50 @@
     <div>
       <button onclick="save()">Save</button>
       <button onclick="clean()">Clean</button>
-      <button onclick="reset()">Reset</button>
       <button onclick="run()">Run</button>
     </div>
 
     <script src="./defaultMap.js"></script>
     <script>
+      class Sorted {
+        constructor(data, compare = (a, b) => a - b) {
+          this.data = data.slice()
+          this.compare = compare
+        }
+
+        give(value) {
+          this.data.push(value)
+        }
+
+        take() {
+          const { data } = this
+          const { length } = data
+
+          if (!length) return null
+
+          let min = data[0]
+          let minIndex = 0
+
+          for (let i = 0; i < length; i++) {
+            if (this.compare(data[i], min) < 0) {
+              min = data[i]
+              minIndex = i
+            }
+          }
+
+          if (minIndex !== 0) {
+            data[minIndex] = data[length - 1]
+          }
+          data.pop()
+
+          return min
+        }
+
+        get length() {
+          return this.data.length
+        }
+      }
+
       let map = JSON.parse(localStorage.getItem('map')) || [...defaultMap]
       let isRuning = false
       let isMouseDown = false
@@ -104,20 +142,6 @@
         })
       }
 
-      function reset() {
-        if (isRuning) return
-        map = [...defaultMap]
-        map.forEach((val, i) => {
-          map[i] = val
-          cells[i].className = 'cell'
-          if (val) {
-            cells[i].classList.add('wall')
-          } else {
-            cells[i].classList.remove('wall')
-          }
-        })
-      }
-
       function restart() {
         if (!isRuning) return
         map.forEach((val, i) => {
@@ -135,8 +159,12 @@
         return new Promise((resolve) => setTimeout(resolve, ms))
       }
 
+      function distance(a, b) {
+        return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2
+      }
+
       async function findPath(map, start, end) {
-        const queue = [start]
+        const queue = new Sorted([start], (a, b) => distance(a, end) - distance(b, end))
         const table = [...map]
 
         async function addPoint(x, y, prev) {
@@ -145,23 +173,23 @@
           if (x < 0 || x > 99 || y < 0 || y > 99) return false
           if (table[index] !== 0) return false
 
-          // await sleep(0)
+          await sleep(0)
           cells[index].classList.add('area')
           table[index] = prev
-          queue.push([x, y])
+          queue.give([x, y])
           return true
         }
 
         while (queue.length) {
-          let [x, y] = queue.shift()
+          let [x, y] = queue.take()
 
           if (x === end[0] && y === end[1]) {
             const path = []
             while (x !== start[0] || y !== start[1]) {
               path.unshift([x, y])
+              ;[x, y] = table[x + y * 100]
               await sleep(0)
               cells[x + y * 100].classList.add('path')
-              ;[x, y] = table[x + y * 100]
             }
             path.unshift([x, y])
             return path
