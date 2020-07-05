@@ -63,7 +63,7 @@
     let j = 0
 
     while (i < s.length) {
-      if (s[i] === s[j]) {
+      if (s[i] === p[j] || p[j] === '?') {
         if (j === p.length - 1) return i - j
         i++
         j++
