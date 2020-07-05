@@ -34,7 +34,10 @@
    *   MultiplicativeExpression % MultiplicativeExpression
    */
   function MultiplicativeExpression(tokens) {
-    if (tokens[0].type === 'Number') {
+    if (tokens[0].type === '(') {
+      ParenthesizedExpression(tokens)
+      return MultiplicativeExpression(tokens)
+    } else if (tokens[0].type === 'Number' || tokens[0].type === 'ParenthesizedExpression') {
       tokens.unshift({
         type: 'MultiplicativeExpression',
         children: tokens.splice(0, 1),
@@ -65,7 +68,10 @@
    *   AdditiveExpression - MultiplicativeExpression
    */
   function AdditiveExpression(tokens) {
-    if (tokens[0].type === 'Number') {
+    if (tokens[0].type === '(') {
+      ParenthesizedExpression(tokens)
+      return AdditiveExpression(token)
+    } else if (tokens[0].type === 'Number' || tokens[0].type === 'ParenthesizedExpression') {
       MultiplicativeExpression(tokens)
       return AdditiveExpression(tokens)
     } else if (tokens[0].type === 'MultiplicativeExpression') {
@@ -97,7 +103,7 @@
    *   AdditiveExpression
    */
   function Expression(tokens) {
-    if (tokens[0].type === 'AdditiveExpression' && tokens[1].type === 'EOF') {
+    if (tokens[0].type === 'AdditiveExpression' && (!tokens[1] || tokens[1].type === 'EOF')) {
       tokens.unshift({
         type: 'Expression',
         children: tokens.splice(0, 2),
@@ -120,12 +126,12 @@
       let end = 0
 
       for (let i = 0; i < tokens.length; i++) {
-        if (tokens[i] === '(') {
+        if (tokens[i].type === '(') {
           if (left === 0) {
             start = i
           }
           left += 1
-        } else if (tokens[i] === ')') {
+        } else if (tokens[i].type === ')') {
           right += 1
           if (left === right) {
             end = i
@@ -138,10 +144,14 @@
         throw new SyntaxError('')
       }
 
+      tokens.splice(end, 1)
+      tokens.splice(start, 1)
+
       const node = {
         type: 'ParenthesizedExpression',
-        children: [Expression(tokens.splice(start, end + 1))],
+        children: [Expression(tokens.splice(start, end - 1))],
       }
+      tokens.splice(start, 0, node)
       return node
     } else {
       throw new SyntaxError('')
@@ -174,13 +184,14 @@
     }
   }
 
-  const source = '1 + (2 * 3) / 4 - 5 - 6'
+  const source = '1 + (2 * 3) / (4 - (5 - 6))'
   const tokens = []
   for (const token of tokenize(source)) {
     if (token.type === 'Whitespace' || token.type === 'LineTerminator') continue
     tokens.push(token)
   }
   const ast = Expression(tokens)
+  console.log(ast)
   const result = calc(ast)
   console.log(result)
   console.log(eval(source))
