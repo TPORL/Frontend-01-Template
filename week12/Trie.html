@@ -1,0 +1,89 @@
+<script>
+  class Trie {
+    constructor() {
+      this.root = Object.create(null)
+    }
+
+    /**
+     * Inserts a word into the trie.
+     * @param {string} word
+     * @return {void}
+     */
+    insert(word) {
+      let node = this.root
+      for (const char of word) {
+        if (!node[char]) {
+          node[char] = Object.create(null)
+        }
+        node = node[char]
+      }
+      if (!node['$']) {
+        node['$'] = 0
+      }
+      node['$'] += 1
+    }
+
+    /**
+     * Returns if the word is in the trie.
+     * @param {string} word
+     * @return {boolean}
+     */
+    search(word) {
+      let node = this.root
+      for (const char of word) {
+        if (!node[char]) return false
+        node = node[char]
+      }
+      return !!node['$']
+    }
+
+    /**
+     * Returns if there is any word in the trie that starts with the given prefix.
+     * @param {string} prefix
+     * @return {boolean}
+     */
+    startsWith(prefix) {
+      let node = this.root
+      for (const char of prefix) {
+        if (!node[char]) return false
+        node = node[char]
+      }
+      return true
+    }
+  }
+
+  function findMost(trie) {
+    let word = ''
+    let count = 0
+
+    function visit(node, prefix = '') {
+      if (node['$'] && node['$'] > count) {
+        word = prefix
+        count = node.$
+      }
+      for (const p in node) {
+        visit(node[p], prefix + p)
+      }
+    }
+    visit(trie.root)
+
+    return { word, count }
+  }
+
+  function randomWord(length) {
+    let word = ''
+    for (let i = 0; i < length; i++) {
+      word += String.fromCodePoint((97 + Math.random() * 26) >> 0)
+    }
+    return word
+  }
+
+  const trie = new Trie()
+
+  for (let i = 0; i < 100000; i++) {
+    trie.insert(randomWord(4))
+  }
+
+  const { word, count } = findMost(trie)
+  console.log(word, count)
+</script>

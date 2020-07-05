@@ -1,0 +1,37 @@
+<script>
+  function getTable(pattern) {
+    const table = [-1]
+
+    let k = -1
+    for (let i = 1; i < pattern.length; i++) {
+      while (k !== -1 && pattern[k + 1] !== pattern[i]) {
+        k = table[k]
+      }
+      if (pattern[k + 1] === pattern[i]) {
+        k++
+      }
+      table[i] = k
+    }
+
+    return table
+  }
+
+  function find(source, pattern) {
+    const table = getTable(pattern)
+
+    let j = 0
+    for (let i = 0; i < source.length; i++) {
+      while (j > 0 && source[i] !== pattern[j]) {
+        j = table[j - 1] + 1
+      }
+      if (source[i] === pattern[j]) {
+        j++
+      }
+      if (j === pattern.length) {
+        return true
+      }
+    }
+
+    return false
+  }
+</script>

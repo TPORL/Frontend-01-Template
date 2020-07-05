@@ -1,0 +1,17 @@
+<script>
+  function isValid(source) {
+    const stack = []
+    for (const char of source) {
+      if (char === '(' || char === '{' || char === '[') {
+        stack.push(char)
+      } else if (char === ')') {
+        if (stack.pop() !== '(') return false
+      } else if (char === '}') {
+        if (stack.pop() !== '{') return false
+      } else if (char === ']') {
+        if (stack.pop() !== '[') return false
+      }
+    }
+    return true
+  }
+</script>

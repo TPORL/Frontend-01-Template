@@ -1,0 +1,132 @@
+<script>
+  const regexp = /([0-9\.]+)|([ ]+)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)|(%)|(\()|(\))/g
+  const dictionary = ['Number', 'Whitespace', 'LineTerminator', '+', '-', '*', '/', '%', '(', ')'] // prettier-ignore
+
+  function* tokenize(source) {
+    while (true) {
+      const lastIndex = regexp.lastIndex
+      const result = regexp.exec(source)
+
+      if (!result) break
+      if (regexp.lastIndex - lastIndex !== result[0].length) {
+        const snippet = source.slice(lastIndex, regexp.lastIndex - result[0].length)
+        throw new Error(`Unexpected token "${snippet}"!`)
+      }
+
+      for (let i = 1; i < result.length; i++) {
+        if (result[i]) {
+          yield {
+            type: dictionary[i - 1],
+            value: result[i],
+          }
+        }
+      }
+    }
+
+    yield { type: 'EOF' }
+  }
+
+  /**
+   * MultiplicativeExpression :
+   *   Number
+   *   MultiplicativeExpression * MultiplicativeExpression
+   *   MultiplicativeExpression / MultiplicativeExpression
+   *   MultiplicativeExpression % MultiplicativeExpression
+   */
+  function MultiplicativeExpression(tokens) {
+    if (tokens[0].type === 'Number') {
+      tokens.unshift({
+        type: 'MultiplicativeExpression',
+        children: tokens.splice(0, 1),
+      })
+      return MultiplicativeExpression(tokens)
+    } else if (tokens[0].type === 'MultiplicativeExpression') {
+      if (tokens[1] && (tokens[1].type === '*' || tokens[1].type === '/' || tokens[1].type === '%')) {
+        const remain = tokens.splice(2)
+        MultiplicativeExpression(remain)
+        tokens.push.apply(tokens, remain)
+        tokens.unshift({
+          type: 'MultiplicativeExpression',
+          children: tokens.splice(0, 3),
+        })
+        return MultiplicativeExpression(tokens)
+      } else {
+        return tokens[0]
+      }
+    } else {
+      throw new SyntaxError('')
+    }
+  }
+
+  /**
+   * AdditiveExpression :
+   *   MultiplicativeExpression
+   *   AdditiveExpression + MultiplicativeExpression
+   *   AdditiveExpression - MultiplicativeExpression
+   */
+  function AdditiveExpression(tokens) {
+    if (tokens[0].type === 'Number') {
+      MultiplicativeExpression(tokens)
+      return AdditiveExpression(tokens)
+    } else if (tokens[0].type === 'MultiplicativeExpression') {
+      tokens.unshift({
+        type: 'AdditiveExpression',
+        children: tokens.splice(0, 1),
+      })
+      return AdditiveExpression(tokens)
+    } else if (tokens[0].type === 'AdditiveExpression') {
+      if (tokens[1] && (tokens[1].type === '+' || tokens[1].type === '-')) {
+        const remain = tokens.splice(2)
+        MultiplicativeExpression(remain)
+        tokens.push.apply(tokens, remain)
+        tokens.unshift({
+          type: 'AdditiveExpression',
+          children: tokens.splice(0, 3),
+        })
+        return AdditiveExpression(tokens)
+      } else {
+        return tokens[0]
+      }
+    } else {
+      throw new SyntaxError('')
+    }
+  }
+
+  /**
+   * Expression :
+   *   AdditiveExpression
+   */
+  function Expression(tokens) {
+    if (tokens[0].type === 'AdditiveExpression' && tokens[1].type === 'EOF') {
+      tokens.unshift({
+        type: 'Expression',
+        children: tokens.splice(0, 2),
+      })
+      return tokens[0]
+    }
+    AdditiveExpression(tokens)
+    return Expression(tokens)
+  }
+
+  /**
+   * ParenthesizedExpression :
+   *   ( Expression )
+   */
+  function ParenthesizedExpression(tokens) {
+    // TODO
+  }
+
+  function calc(ast) {
+    console.log(ast)
+  }
+
+  const source = '1 + 2 * 3 + 4 * 5 + 6'
+  const tokens = []
+  for (const token of tokenize(source)) {
+    if (token.type === 'Whitespace' || token.type === 'LineTerminator') continue
+    tokens.push(token)
+  }
+  const ast = Expression(tokens)
+  const result = calc(ast)
+  console.log(result)
+</script>
