@@ -1,37 +1,81 @@
 <script>
-  function getTable(pattern) {
-    const table = [-1]
+  /**
+   * 构建前缀表
+   */
+  function getPrefix(p) {
+    const table = [0]
 
-    let k = -1
-    for (let i = 1; i < pattern.length; i++) {
-      while (k !== -1 && pattern[k + 1] !== pattern[i]) {
-        k = table[k]
+    let i = 1
+    let j = 0
+
+    while (i < p.length) {
+      if (p[i] === p[j]) {
+        table[i] = j + 1
+        i++
+        j++
+      } else {
+        if (j === 0) {
+          table[i] = 0
+          i++
+        } else {
+          j = table[j - 1]
+        }
       }
-      if (pattern[k + 1] === pattern[i]) {
-        k++
-      }
-      table[i] = k
     }
 
     return table
   }
 
-  function find(source, pattern) {
-    const table = getTable(pattern)
+  /**
+   * 构建 next 数组
+   * 就是把前缀表右移一位，[0]补-1
+   */
+  function getNext(p) {
+    const next = new Array(p.length).fill(0)
 
+    let i = 1
     let j = 0
-    for (let i = 0; i < source.length; i++) {
-      while (j > 0 && source[i] !== pattern[j]) {
-        j = table[j - 1] + 1
-      }
-      if (source[i] === pattern[j]) {
+
+    while (i < p.length - 1) {
+      if (p[i] === p[j]) {
+        next[i + 1] = j + 1
+        i++
         j++
-      }
-      if (j === pattern.length) {
-        return true
+      } else {
+        if (j === 0) {
+          next[i + 1] = 0
+          i++
+        } else {
+          j = next[j]
+        }
       }
     }
 
-    return false
+    next[0] = -1
+
+    return next
+  }
+
+  function kmp(s, p) {
+    const next = getNext(p)
+
+    let i = 0
+    let j = 0
+
+    while (i < s.length) {
+      if (s[i] === s[j]) {
+        if (j === p.length - 1) return i - j
+        i++
+        j++
+      } else {
+        j = next[j]
+        if (j === -1) {
+          i++
+          j++
+        }
+      }
+    }
+
+    return -1
   }
 </script>
