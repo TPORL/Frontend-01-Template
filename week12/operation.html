@@ -113,14 +113,68 @@
    *   ( Expression )
    */
   function ParenthesizedExpression(tokens) {
-    // TODO
+    if (tokens[0].type === '(') {
+      let left = 0
+      let right = 0
+      let start = 0
+      let end = 0
+
+      for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === '(') {
+          if (left === 0) {
+            start = i
+          }
+          left += 1
+        } else if (tokens[i] === ')') {
+          right += 1
+          if (left === right) {
+            end = i
+            break
+          }
+        }
+      }
+
+      if (end === 0) {
+        throw new SyntaxError('')
+      }
+
+      const node = {
+        type: 'ParenthesizedExpression',
+        children: [Expression(tokens.splice(start, end + 1))],
+      }
+      return node
+    } else {
+      throw new SyntaxError('')
+    }
   }
 
-  function calc(ast) {
-    console.log(ast)
+  function calc(node) {
+    const children = node.children
+    if (children.length === 3) {
+      const left = calc(children[0])
+      const right = calc(children[2])
+      const operator = children[1].value
+      if (operator === '+') {
+        return left + right
+      } else if (operator === '-') {
+        return left - right
+      } else if (operator === '*') {
+        return left * right
+      } else if (operator === '/') {
+        return left / right
+      } else if (operator === '%') {
+        return left % right
+      }
+    } else {
+      if (children[0].type === 'Number') {
+        return Number(children[0].value)
+      } else {
+        return calc(children[0])
+      }
+    }
   }
 
-  const source = '1 + 2 * 3 + 4 * 5 + 6'
+  const source = '1 + (2 * 3) / 4 - 5 - 6'
   const tokens = []
   for (const token of tokenize(source)) {
     if (token.type === 'Whitespace' || token.type === 'LineTerminator') continue
@@ -129,4 +183,5 @@
   const ast = Expression(tokens)
   const result = calc(ast)
   console.log(result)
+  console.log(eval(source))
 </script>
