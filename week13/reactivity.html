@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Reactivity</title>
+  </head>
+  <body>
+    <input id="r" type="range" min="0" max="255" value="0" />
+    <input id="g" type="range" min="0" max="255" value="0" />
+    <input id="b" type="range" min="0" max="255" value="0" />
+    <input id="a" type="range" min="0" max="1" step="0.1" value="1" />
+    <div id="block" style="width: 100px; height: 100px;"></div>
+    <script>
+      'use strict'
+
+      function isObject(value) {
+        return value != null && typeof value === 'object'
+      }
+
+      /**
+       * effect
+       */
+
+      const targetMap = new WeakMap()
+      let activeEffect
+
+      function track(target, key) {
+        if (!activeEffect) return
+        let depsMap = targetMap.get(target)
+        if (!depsMap) {
+          targetMap.set(target, (depsMap = new Map()))
+        }
+        let dep = depsMap.get(key)
+        if (!dep) {
+          depsMap.set(key, (dep = new Set()))
+        }
+        if (!dep.has(activeEffect)) {
+          dep.add(activeEffect)
+        }
+      }
+
+      function trigger(target, key) {
+        const depsMap = targetMap.get(target)
+        if (!depsMap) return
+        const dep = depsMap.get(key)
+        if (!dep) return
+        dep.forEach((effect) => {
+          effect()
+        })
+      }
+
+      function effect(fn) {
+        activeEffect = fn
+        fn()
+      }
+
+      /**
+       * reactive
+       */
+
+      function reactive(target) {
+        return new Proxy(target, {
+          get(target, key, receiver) {
+            const res = Reflect.get(target, key, receiver)
+            track(target, key)
+            if (isObject(res)) {
+              return reactive(res)
+            }
+            return res
+          },
+          set(target, key, value, receiver) {
+            const res = Reflect.set(target, key, value, receiver)
+            trigger(target, key)
+            return res
+          },
+        })
+      }
+
+      /**
+       * test
+       */
+
+      let dummy
+      const data = reactive({ x: { y: 1 } })
+      effect(() => (dummy = data.x.y))
+
+      data.x = { y: 2 }
+      console.log(dummy) // 2
+      data.x.y = 3
+      console.log(dummy) // 3
+
+      /**
+       * demo
+       */
+
+      const $r = document.querySelector('#r')
+      const $g = document.querySelector('#g')
+      const $b = document.querySelector('#b')
+      const $a = document.querySelector('#a')
+      const $block = document.querySelector('#block')
+
+      const color = reactive({ r: 0, g: 0, b: 0, a: 1 })
+      effect(() => {
+        $block.style.backgroundColor = `rgba(${color.r},${color.g},${color.b},${color.a})`
+      })
+
+      $r.addEventListener('input', ({ target }) => (color.r = target.value))
+      $g.addEventListener('input', ({ target }) => (color.g = target.value))
+      $b.addEventListener('input', ({ target }) => (color.b = target.value))
+      $a.addEventListener('input', ({ target }) => (color.a = target.value))
+    </script>
+  </body>
+</html>
