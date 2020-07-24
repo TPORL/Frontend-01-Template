@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Animation</title>
+    <style>
+      .box {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 10px;
+        background-color: #f5da55;
+      }
+
+      #box1 {
+        animation: move 1s ease 0.5s forwards;
+        animation-play-state: paused;
+      }
+
+      @keyframes move {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(300px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box" id="box1"></div>
+    <div class="box" id="box2"></div>
+    <button id="btn-start">Start</button>
+    <button id="btn-pause">Pause</button>
+    <button id="btn-resume">Resume</button>
+    <button id="btn-restart">Restart</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bezier-easing@2.1.0/dist/bezier-easing.min.js"></script>
+    <script type="module">
+      import { Animation, Timeline } from './animation.js'
+
+      const $btnStart = document.querySelector('#btn-start')
+      const $btnPause = document.querySelector('#btn-pause')
+      const $btnResume = document.querySelector('#btn-resume')
+      const $btnRestart = document.querySelector('#btn-restart')
+
+      const $box1 = document.querySelector('#box1')
+      const $box2 = document.querySelector('#box2')
+
+      const ease = BezierEasing(0.25, 0.1, 0.25, 1)
+      const timeline = new Timeline()
+      const animation = new Animation($box2, {
+        property: 'transform',
+        template: (p) => `translateX(${p * 300}px)`,
+        duration: 1000,
+        timingFunction: ease,
+        delay: 500,
+      })
+      timeline.add(animation)
+
+      $btnStart.addEventListener('click', () => {
+        // box1
+        $box1.style.animationPlayState = 'running'
+
+        // box2
+        timeline.play()
+      })
+
+      $btnPause.addEventListener('click', () => {
+        // box1
+        $box1.style.animationPlayState = 'paused'
+
+        // box2
+        timeline.pause()
+      })
+
+      $btnResume.addEventListener('click', () => {
+        // box1
+        $box1.style.animationPlayState = 'running'
+
+        // box2
+        timeline.resume()
+      })
+
+      $btnRestart.addEventListener('click', () => {
+        // box1
+        $box1.style.animationName = 'none'
+        setTimeout(() => {
+          $box1.style.animationName = 'move'
+          $box1.style.animationPlayState = 'running'
+        }, 0)
+
+        // box2
+        timeline.restart()
+      })
+    </script>
+  </body>
+</html>

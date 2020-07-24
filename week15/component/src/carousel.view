@@ -1,0 +1,26 @@
+<template>
+  <div>
+    <img src="" alt="" />
+  </div>
+</template>
+
+<script>
+export default {
+  el: '#example',
+  data() {
+    return {
+      message: 'Hello',
+    }
+  },
+  computed: {
+    reversedMessage() {
+      let i = 0
+      while (i < 100) {
+        i++
+      }
+      let j = '<html>'
+      return this.message.split('').reverse().join('')
+    },
+  },
+}
+</script>
