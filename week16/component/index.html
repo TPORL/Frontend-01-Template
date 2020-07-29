@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Component</title>
+    <style>
+      .carousel {
+        width: 640px;
+        height: 320px;
+        margin: 0 auto;
+        outline: 1px solid blue;
+        overflow: hidden;
+      }
+
+      .carousel-wrapper {
+        display: flex;
+      }
+
+      .carousel-slide {
+        flex: 0 0 100%;
+      }
+
+      .carousel-slide > img {
+        width: 100%;
+        height: auto;
+        vertical-align: top;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="./main.js"></script>
+  </body>
+</html>

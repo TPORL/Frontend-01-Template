@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Gesture Demo</title>
+    <style>
+      body {
+        margin: 0;
+        background-color: #f0f0f4;
+      }
+
+      #box {
+        width: 200px;
+        height: 200px;
+        background-color: #f5da55;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box"></div>
+    <script type="module">
+      import Gesture from '../src/gesture.js'
+
+      const $box = Gesture('#box')
+      let baseX = 0
+      let baseY = 0
+
+      $box.addEventListener('pan', (event) => {
+        const x = baseX + event.detail.deltaX
+        const y = baseY + event.detail.deltaY
+        $box.style.transform = `translate3d(${x}px, ${y}px, 0)`
+      })
+
+      $box.addEventListener('panend', (event) => {
+        baseX += event.detail.deltaX
+        baseY += event.detail.deltaY
+        $box.style.transform = `translate3d(${baseX}px, ${baseY}px, 0)`
+      })
+
+      Gesture(document)
+
+      document.addEventListener('tap', (event) => {
+        console.log('tap')
+        if (event.detail.tapCount === 1) {
+          console.log('singleTap')
+        } else if (event.detail.tapCount === 2) {
+          console.log('doubleTap')
+        }
+      })
+
+      document.addEventListener('press', () => {
+        console.log('press')
+      })
+
+      document.addEventListener('pressup', () => {
+        console.log('pressup')
+      })
+
+      document.addEventListener('swipe', (event) => {
+        console.log(`swiper::${event.detail.direction}`)
+      })
+    </script>
+  </body>
+</html>

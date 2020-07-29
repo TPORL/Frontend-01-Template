@@ -1,0 +1,32 @@
+{
+  "name": "@tporl/gesture",
+  "version": "1.0.0",
+  "description": "a multi-touch gestures library.",
+  "main": "src/gesture.js",
+  "scripts": {
+    "lint": "eslint src/**/*.js demo/**/*.js",
+    "serve": "npx http-server -c-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TPORL/gesture.git"
+  },
+  "keywords": [
+    "gesture",
+    "touch",
+    "javascript",
+    "js"
+  ],
+  "author": "TPORL",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TPORL/gesture/issues"
+  },
+  "homepage": "https://github.com/TPORL/gesture#readme",
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.0.5"
+  }
+}
