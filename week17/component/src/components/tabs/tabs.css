@@ -1,0 +1,37 @@
+.tabs {
+  border: 1px solid #e2e2e2;
+}
+
+.tabs-nav {
+  padding: 10px;
+  border-bottom: 1px solid #e2e2e2;
+  display: flex;
+}
+
+.tabs-tab {
+  cursor: pointer;
+}
+
+.tabs-tab + .tabs-tab {
+  margin-left: 20px;
+}
+
+.tabs-tab:hover {
+  color: #b8bcff;
+}
+
+.tabs-tab.is-active {
+  color: #66f;
+}
+
+.tabs-content {
+  padding: 10px;
+}
+
+.tabs-pane {
+  display: none;
+}
+
+.tabs-pane.is-active {
+  display: block;
+}
