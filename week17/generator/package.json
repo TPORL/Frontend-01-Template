@@ -1,0 +1,16 @@
+{
+  "name": "@tporl/generator",
+  "version": "1.0.0",
+  "description": "generator",
+  "main": "./app/index.js",
+  "scripts": {},
+  "keywords": [
+    "generator"
+  ],
+  "author": "TPORL",
+  "license": "MIT",
+  "devDependencies": {
+    "yeoman-generator": "^4.11.0",
+    "yo": "^3.1.1"
+  }
+}

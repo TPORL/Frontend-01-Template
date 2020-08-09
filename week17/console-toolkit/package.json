@@ -1,0 +1,16 @@
+{
+  "name": "@tporl/console-toolkit",
+  "version": "1.0.0",
+  "description": "console toolkit",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "console",
+    "toolkit"
+  ],
+  "author": "TPORL",
+  "license": "MIT",
+  "devDependencies": {
+    "ttys": "0.0.3"
+  }
+}
