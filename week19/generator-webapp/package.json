@@ -1,0 +1,25 @@
+{
+  "name": "generator-webapp",
+  "version": "0.1.0",
+  "description": "generator webapp",
+  "files": [
+    "generators"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "author": "TPORL",
+  "license": "MIT",
+  "dependencies": {
+    "yeoman-generator": "^4.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.0.5"
+  }
+}

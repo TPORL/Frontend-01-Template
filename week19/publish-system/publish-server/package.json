@@ -1,0 +1,14 @@
+{
+  "name": "publish-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "TPORL",
+  "license": "MIT",
+  "dependencies": {
+    "unzipper": "^0.10.11"
+  }
+}

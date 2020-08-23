@@ -1,0 +1,14 @@
+{
+  "name": "publish-tool",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "TPORL",
+  "license": "MIT",
+  "dependencies": {
+    "archiver": "^5.0.0"
+  }
+}
